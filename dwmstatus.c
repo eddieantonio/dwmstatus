@@ -2,10 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
+#include <signal.h>
 #include <unistd.h>
 
-#include <time.h>
 #include <X11/Xlib.h>
 
 
@@ -21,7 +22,7 @@
 #define BATTERY_WARNING 10
 
 #define MSG_FONT        "Droid Sans Mono"
-#define MSG_WARN_COLOR  "#cc0000"
+#define MSG_WARN_COLOR  "#c03333"
 #define MSG_PREAMBLE    "<span font_family='" MSG_FONT "'><b>"
 #define MSG_END         "</b></span>"
 
@@ -108,7 +109,7 @@ static char* battery_status() {
 
 
 /* Reformats the string into message_buffer. */
-void recalculate_string() {
+static void recalculate_string() {
     int charge = battery_percentage();
     char* status = battery_status();
     char *span_start, *span_end;
@@ -143,7 +144,7 @@ void recalculate_string() {
 }
 
 
-void print_status() {
+static void print_status() {
     recalculate_string();
 
 #if STATUS_TO_STDIO
@@ -155,6 +156,14 @@ void print_status() {
 }
 
 
+/* Called by atexit hook. */
+static void notify_terminated() {
+    set_status("<span color='red'>"
+               "<span font_family='Droid Sans Mono'>dwmstatus</span>"
+               "<b> stopped!</b></span>");
+}
+
+
 int main() {
 
     /* First, open the X display. */
@@ -162,6 +171,11 @@ int main() {
         perror("Cannot open display");
         exit(EXIT_FAILURE);
     }
+
+    /* Make sure the status is affected when this program is killed. */
+    atexit(notify_terminated);
+    signal(SIGINT, exit);
+    signal(SIGTERM, exit);
 
     while (1) {
         print_status();
