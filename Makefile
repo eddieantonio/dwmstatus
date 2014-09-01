@@ -1,6 +1,8 @@
 BIN = status
 
-all: test
+CFLAGS = -g -Wall -pedantic -std=c11
+
+all: $(BIN)
 
 test: $(BIN)
 	./$<
