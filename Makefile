@@ -1,6 +1,6 @@
-BIN = status
+BIN = dwmstatus
 
-CFLAGS = -g -Wall -pedantic -std=c11
+CFLAGS = -Wall -Werror -pedantic -std=c11 -Os
 LDFLAGS = -lX11
 
 all: $(BIN)
