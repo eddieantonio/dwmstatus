@@ -82,11 +82,15 @@ static int battery_percentage() {
 
 static char *status_to_emoji(char status) {
     switch (status) {
+    	/* Charging. */
         case 'C': return "🔌";
+        /* Discharging */
         case 'D': return "🔋";
-        case 'F': return "🔌";
+        /* Full */
+        case 'F': return "🔆";
         default:
-            assert(0 && "Should not get here!");
+            /* Unknown state. It happens sometimes... */
+            return "❓";
     }
 }
 
